@@ -1,0 +1,9 @@
+<div class="webcam">
+  <div class="controls">
+    <button (click)="start()" [disabled]="isRunning">Start</button>
+    <button (click)="stop()" [disabled]="!isRunning">Stop</button>
+    <span class="status" *ngIf="error">{{ error }}</span>
+  </div>
+
+  <video #video autoplay playsinline muted></video>
+</div>

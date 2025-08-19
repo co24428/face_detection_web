@@ -1,0 +1,23 @@
+.webcam {
+  display: grid;
+  gap: .75rem;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+video {
+  width: 100%;
+  max-width: 960px;
+  aspect-ratio: 16/9;
+  background: #000;
+  border-radius: .5rem;
+}
+
+.status {
+  color: #c00;
+  font-size: .9rem;
+}

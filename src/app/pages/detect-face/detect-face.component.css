@@ -1,0 +1,28 @@
+.stage {
+  position: relative;
+  width: 100%;
+  max-width: 960px;
+}
+
+video {
+  display: none;
+}
+
+canvas {
+  width: 100%;
+  display: block;
+  border-radius: .5rem;
+}
+
+.bg {
+  position: relative;
+  z-index: 1;
+}
+
+/* show overlay canvas to set absolute position */
+.ov {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}

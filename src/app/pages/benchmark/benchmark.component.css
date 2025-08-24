@@ -1,0 +1,74 @@
+.bench {
+    max-width: 980px;
+    margin: 24px auto;
+    padding: 0 16px;
+    color: #e9f5ef;
+}
+
+.bench h1 {
+    margin: 0 0 8px;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #000;
+}
+
+.note {
+    margin: 0 0 16px;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+/* Tabs */
+.tabs {
+    background: #0b0b0c;
+    border: 1px solid #1c1c1f;
+    border-radius: 12px;
+    padding: 10px;
+}
+
+.tabs input[type="radio"] {
+    display: none;
+}
+
+.tabs label {
+    display: inline-block;
+    margin: 4px 8px 8px 0;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: #111214;
+    color: #dcefe6;
+    cursor: pointer;
+    user-select: none;
+    border: 1px solid #1f2a24;
+}
+
+.tabs label:hover {
+    background: #16201b;
+}
+
+.panels {
+    position: relative;
+    background: #0e0f10;
+    border: 1px solid #1c1c1f;
+    border-radius: 10px;
+    padding: 14px 16px;
+    min-height: 220px;
+}
+
+/* hide all panels by default */
+.panel {
+    display: none;
+}
+
+/* show panel linked to checked tab */
+#tab-overview:checked~.panels .panel[data-tab="tab-overview"],
+#tab-metrics:checked~.panels .panel[data-tab="tab-metrics"] {
+    display: block;
+}
+
+/* active tab style */
+#tab-overview:checked~label[for="tab-overview"],
+#tab-metrics:checked~label[for="tab-metrics"] {
+    background: #1c2a22;
+    border-color: #2b5a46;
+}

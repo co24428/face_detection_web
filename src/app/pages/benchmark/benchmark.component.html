@@ -1,0 +1,50 @@
+<section class="bench">
+    <h1>Benchmark</h1>
+    <p class="note">
+      Quick background about the metrics and how to read them. Values vary by device, browser, and settings.
+    </p>
+  
+    <!-- Tabs -->
+    <div class="tabs">
+      <input type="radio" name="tab" id="tab-overview" checked>
+      <label for="tab-overview">Overview</label>
+  
+      <input type="radio" name="tab" id="tab-metrics">
+      <label for="tab-metrics">Metrics</label>
+  
+      <div class="panels">
+        <!-- Overview -->
+        <div class="panel" data-tab="tab-overview">
+          <h2>What we measure</h2>
+          <ul>
+            <li><strong>FPS</strong> (render): how smooth the UI looks.</li>
+            <li><strong>Throughput (TPS)</strong>: inferences per second (model loop).</li>
+            <li><strong>Latency</strong>: end-to-end (E2E), model-only (Run), and pre/post steps.</li>
+            <li><strong>Stability</strong>: how latency changes over time (p50/p90 drift).</li>
+            <li><strong>Resources</strong>: dropped frames, memory hints.</li>
+            <li><strong>Accuracy (optional)</strong>: AP&#64;0.5 with a small labeled set.</li>
+          </ul>
+        </div>
+  
+        <!-- Metrics -->
+        <div class="panel" data-tab="tab-metrics">
+          <h2>Key metrics</h2>
+          <ul>
+            <li><strong>FPS</strong>: frames rendered per second (UI smoothness).</li>
+            <li><strong>Throughput (TPS)</strong>: inferences/sec; can differ from FPS.</li>
+            <li><strong>Latency (ms)</strong>:
+              <ul>
+                <li><em>E2E</em>: capture → boxes painted.</li>
+                <li><em>Run</em>: <code>session.run()</code> only.</li>
+                <li><em>Pre/Post</em>: resize/normalize &amp; decoding/NMS/draw.</li>
+              </ul>
+            </li>
+            <li><strong>p50 / p90 / avg</strong>: distribution snapshots; p90 is a good “worst-case feel”.</li>
+            <li><strong>AP&#64;0.5</strong> (optional): IoU ≥ 0.5 matching with a small GT set.</li>
+          </ul>
+        </div>
+  
+      </div>
+    </div>
+  </section>
+  

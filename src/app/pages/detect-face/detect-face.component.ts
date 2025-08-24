@@ -13,7 +13,7 @@ export class DetectFaceComponent implements OnDestroy {
   constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
   get isBrowser() { return isPlatformBrowser(this.platformId); }
 
-  @ViewChild('video', { static: false }) videoRef?: ElementRef<HTMLVideoElement>;
+  @ViewChild('video',    { static: false }) videoRef?: ElementRef<HTMLVideoElement>;
   @ViewChild('canvasBg', { static: false }) canvasBgRef?: ElementRef<HTMLCanvasElement>;
   @ViewChild('canvasOv', { static: false }) canvasOvRef?: ElementRef<HTMLCanvasElement>;
 
@@ -36,6 +36,11 @@ export class DetectFaceComponent implements OnDestroy {
 
   // Result of inference
   private lastBoxes: { x1: number; y1: number; x2: number; y2: number; score: number }[] = [];
+
+  // ----- HUD / Benchmark -----
+  hudText = '';
+  private bench = new Bench(120);
+  private hudTimer?: any;
 
   async start() {
     if (!this.isBrowser) return;
@@ -73,6 +78,11 @@ export class DetectFaceComponent implements OnDestroy {
         this.session = await ort.InferenceSession.create(bytes, { executionProviders: ['wasm'] });
       }
 
+      // init benchmark/HUD
+      this.bench.reset();
+      this.hudText = '';
+      this.hudTimer = setInterval(() => this.updateHud(), 1000);
+
       this.running = true;
       this.isRunning = true;
       this.renderLoop(); // Every frame video and bounding box render
@@ -91,6 +101,8 @@ export class DetectFaceComponent implements OnDestroy {
 
     if (this.rafId) cancelAnimationFrame(this.rafId);
     this.rafId = undefined;
+
+    if (this.hudTimer) { clearInterval(this.hudTimer); this.hudTimer = undefined; }
 
     if (this.stream) {
       this.stream.getTracks().forEach(t => t.stop());
@@ -111,12 +123,16 @@ export class DetectFaceComponent implements OnDestroy {
 
     this.lastBoxes = [];
     this.busy = false;
+    this.hudText = '';
   }
 
   ngOnDestroy() { this.stop(); }
 
   private renderLoop = () => {
     if (!this.running) return;
+
+    // FPS counter
+    this.bench.tickRender();
 
     const video = this.videoRef?.nativeElement;
     const bg = this.canvasBgRef?.nativeElement;
@@ -164,6 +180,7 @@ export class DetectFaceComponent implements OnDestroy {
       if (video && ov && video.readyState >= 2) {
         // Preprocesing: Video, 640x640 RGB CHW float32
         const S = this.inputSize;
+        const t0 = performance.now();
         const tmp = document.createElement('canvas');
         tmp.width = S; tmp.height = S;
         const tctx = tmp.getContext('2d')!;
@@ -180,36 +197,38 @@ export class DetectFaceComponent implements OnDestroy {
           i++;
         }
         const tensor = new ort.Tensor('float32', data, [1, 3, S, S]);
+        const t1 = performance.now();
 
+        // Run
         const outMap = await this.session.run({ [this.inputName]: tensor });
-
-        // Show log for debugging
-        // if (!(this as any)._loggedOnce) {
-        //   const keys = Object.keys(outMap);
-        //   const first = outMap[keys[0]] as ort.Tensor;
-        //   console.log('[YOLO] output keys:', keys);
-        //   console.log('[YOLO] dims:', first.dims, 'type:', first.type);
-        //   console.log('[YOLO] length:', first.data.length);
-        //   console.log('[YOLO] sample[0:40]:', Array.from(first.data as any).slice(0, 40));
-        //   (this as any)._loggedOnce = true;
-        // }
-
         const out = outMap[Object.keys(outMap)[0]] as ort.Tensor;
+        const t2 = performance.now();
 
-        // Decoding, update result
+        // Post: decode + update
         this.lastBoxes = this.decodeYolo(out, ov.width, ov.height);
+        const t3 = performance.now();
+
+        // record (pre, run, post, e2e)
+        this.bench.push(t1 - t0, t2 - t1, t3 - t2, t3 - t0);
       }
     } catch (e) {
       console.warn('infer error', e);
     } finally {
       this.busy = false;
-      // 추론 주기 조절 (너무 바쁘면 30~100ms 정도로 올려도 됨)
       // manage render speed ( set 30-100ms if too busy )
       setTimeout(() => this.inferLoop(), 0);
     }
   }
 
-  // ----- 디코더/NMS 동일 (dims [1,5,8400] 가정) -----
+  // HUD text update (called every second)
+  private updateHud() {
+    const s = this.bench.snapshot();
+    const line1 = `FPS ${s.fps.toFixed(0)}  |  TPS ${s.tps.toFixed(0)}`;
+    const line2 = `E2E  p50 ${s.e2e.p50.toFixed(1)}ms  p90 ${s.e2e.p90.toFixed(1)}ms  avg ${s.e2e.avg.toFixed(1)}ms`;
+    const line3 = `RUN  p50 ${s.run.p50.toFixed(1)}ms  p90 ${s.run.p90.toFixed(1)}ms  avg ${s.run.avg.toFixed(1)}ms`;
+    this.hudText = `${line1}\n${line2}\n${line3}`;
+  }
+
   // ----- decoder/NMS (dims [1,5,8400]) -----
   private iou(a: { x1: number; y1: number; x2: number; y2: number },
     b: { x1: number; y1: number; x2: number; y2: number }) {
@@ -278,5 +297,49 @@ export class DetectFaceComponent implements OnDestroy {
     }
 
     return this.nms(boxes);
+  }
+}
+
+/* ----- tiny benchmark util ----- */
+type Stat = { p50:number; p90:number; p99:number; avg:number; min:number; max:number };
+class Bench {
+  private win: number;
+  private e2e: number[] = [];
+  private run: number[] = [];
+  private pre: number[] = [];
+  private post: number[] = [];
+  private rf = 0;
+  private ic = 0;
+  private lastTick = performance.now();
+  fps = 0; tps = 0;
+
+  constructor(windowSize = 120) { this.win = windowSize; }
+  reset() {
+    this.e2e.length = this.run.length = this.pre.length = this.post.length = 0;
+    this.rf = this.ic = 0; this.fps = this.tps = 0; this.lastTick = performance.now();
+  }
+  tickRender() {
+    this.rf++;
+    const now = performance.now();
+    if (now - this.lastTick >= 1000) {
+      this.fps = this.rf; this.rf = 0;
+      this.tps = this.ic; this.ic = 0;
+      this.lastTick = now;
+    }
+  }
+  push(pre:number, run:number, post:number, e2e:number) {
+    this.ic++;
+    const pushWin = (arr:number[], v:number) => { arr.push(v); if (arr.length > this.win) arr.shift(); };
+    pushWin(this.pre, pre); pushWin(this.run, run); pushWin(this.post, post); pushWin(this.e2e, e2e);
+  }
+  private stat(arr:number[]): Stat {
+    if (!arr.length) return { p50:0,p90:0,p99:0,avg:0,min:0,max:0 };
+    const s = [...arr].sort((a,b)=>a-b);
+    const q = (p:number)=> s[Math.floor((p/100)*(s.length-1))];
+    const avg = arr.reduce((a,b)=>a+b,0)/arr.length;
+    return { p50:q(50), p90:q(90), p99:q(99), avg, min:s[0], max:s[s.length-1] };
+  }
+  snapshot() {
+    return { e2e: this.stat(this.e2e), run: this.stat(this.run), pre: this.stat(this.pre), post: this.stat(this.post), fps: this.fps, tps: this.tps };
   }
 }

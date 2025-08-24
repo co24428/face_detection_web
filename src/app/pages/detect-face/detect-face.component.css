@@ -1,7 +1,15 @@
+.wrap {
+  display: grid;
+  gap: .75rem;
+}
+
 .stage {
   position: relative;
   width: 100%;
   max-width: 960px;
+  background: black;
+  aspect-ratio: 16/9;
+  border-radius: .5rem;
 }
 
 video {
@@ -14,6 +22,12 @@ canvas {
   border-radius: .5rem;
 }
 
+.controls {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
 .bg {
   position: relative;
   z-index: 1;
@@ -24,5 +38,20 @@ canvas {
   position: absolute;
   inset: 0;
   z-index: 2;
+  pointer-events: none;
+}
+
+.hud {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  z-index: 3;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #e6ffe6;
+  font: 12px/1.4 monospace;
+  white-space: pre;
   pointer-events: none;
 }

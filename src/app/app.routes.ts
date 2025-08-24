@@ -3,11 +3,13 @@ import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
 import { WebcamComponent } from './pages/webcam/webcam.component';
 import { DetectFaceComponent } from './pages/detect-face/detect-face.component';
+import { BenchmarkComponent } from './pages/benchmark/benchmark.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent, title: 'Home' },
   { path: 'webcam', component: WebcamComponent, title: 'Webcam' },
   { path: 'detect-face', component: DetectFaceComponent, title: 'Detect Face' },
+  { path: 'benchmark', component: BenchmarkComponent, title: 'Benchmark' },
   { path: '**', redirectTo: '' },
 ];
 

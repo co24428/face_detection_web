@@ -1,0 +1,50 @@
+.bench { max-width: 980px; margin: 24px auto; padding: 0 16px; }
+.bench h1 { margin: 0 0 8px; font-size: 1.75rem; font-weight: 700; }
+.note { margin: 0 0 16px; color: #666; font-size: 0.95rem; }
+
+.cmp-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+}
+.card {
+  grid-column: span 12;
+  background: #0b0b0c;
+  color: #e9f5ef;
+  border: 1px solid #1c1c1f;
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+@media (min-width: 820px) {
+  .card { grid-column: span 6; }
+}
+
+.card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 8px;
+}
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #1c2a22;
+  border: 1px solid #2b5a46;
+  color: #bfe3d1;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.meta { color: #9db4a9; font-size: 0.85rem; }
+
+.hud-mini {
+  background: rgba(0,0,0,0.55);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font: 12px/1.6 monospace;
+  color: #e6ffe6;
+  white-space: pre-wrap;
+}
+.hud-mini .k { color: #d9f7e6; margin-right: 6px; display:inline-block; min-width: 28px; }
+.hud-mini .v { display:inline-block; min-width: 28px; }
+
+.footnote { margin-top: 10px; color: #666; font-size: 0.9rem; }

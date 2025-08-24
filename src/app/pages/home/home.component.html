@@ -1,1 +1,37 @@
-<p>Choose option to the menu</p>
+<section class="bench">
+    <h1>Model Comparison</h1>
+    <p class="note">Summary of recent runs (same device/browser/camera).</p>
+  
+    <div class="cmp-grid">
+      <!-- YOLOv8n-face -->
+      <div class="card">
+        <div class="card-head">
+          <span class="badge">YOLOv8n-face</span>
+          <span class="meta">input 640 • wasm-simd (1t)</span>
+        </div>
+        <div class="hud-mini">
+          <div><span class="k">FPS</span><span class="v">60</span>  |  <span class="k">TPS</span><span class="v">4</span></div>
+          <div><span class="k">E2E</span>  p50 220.0ms   p90 227.9ms   avg 222.1ms</div>
+          <div><span class="k">RUN</span>  p50 215.9ms   p90 224.3ms   avg 218.1ms</div>
+        </div>
+      </div>
+  
+      <!-- YOLOv8s-face -->
+      <div class="card">
+        <div class="card-head">
+          <span class="badge">YOLOv8s-face</span>
+          <span class="meta">input 640 • wasm-simd (1t)</span>
+        </div>
+        <div class="hud-mini">
+          <div><span class="k">FPS</span><span class="v">60</span>  |  <span class="k">TPS</span><span class="v">2</span></div>
+          <div><span class="k">E2E</span>  p50 700.6ms   p90 709.8ms   avg 706.3ms</div>
+          <div><span class="k">RUN</span>  p50 696.5ms   p90 700.3ms   avg 701.2ms</div>
+        </div>
+      </div>
+    </div>
+  
+    <p class="footnote">
+        Compared to v8s, v8n runs roughly twice as fast in terms of TPS (4 → 2). Both runs are vsync-capped at 60 FPS for rendering.
+    </p>
+  </section>
+  

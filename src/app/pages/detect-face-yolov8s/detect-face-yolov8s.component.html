@@ -1,0 +1,17 @@
+<div class="wrap" [hidden]="!isBrowser">
+    <div class="controls">
+        <button (click)="start()" [disabled]="isRunning">Start</button>
+        <button (click)="stop()" [disabled]="!isRunning">Stop</button>
+        <span class="err" *ngIf="error">{{error}}</span>
+    </div>
+
+    <div class="stage">
+        <video #video autoplay playsinline muted></video>
+        <canvas #canvasBg class="bg"></canvas>
+        <canvas #canvasOv class="ov"></canvas>
+
+        <div class="hud">
+            {{ hudText }}
+          </div>
+    </div>
+</div>

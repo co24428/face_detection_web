@@ -2,11 +2,31 @@
 
 This project demonstrates how to run a **real-time face detection model** in an Angular application using **ONNX Runtime Web (ort-web)**.  
 It captures webcam input, runs inference with an ONNX model, and overlays bounding boxes directly on top of the video stream.
+
 ---
+
 ## Demo Result
 
 ![Detection Result 1](./assets/result1.png)
 ![Detection Result 2](./assets/result2.png)
+
+---
+
+## Models
+- yolov8n-face ( from [lindevs/yolov8-face](https://github.com/lindevs/yolov8-face) )
+- yolov8s-face ( from [lindevs/yolov8-face](https://github.com/lindevs/yolov8-face) )
+
+---
+
+## Benchmark Results
+
+| Model        | FPS | TPS | E2E p50 | E2E p90 | E2E avg | RUN p50 | RUN p90 | RUN avg |
+|--------------|-----|-----|---------|---------|---------|---------|---------|---------|
+| **yolov8n**  | 60  | 4   | 220.0ms | 227.9ms | 222.1ms | 215.9ms | 224.3ms | 218.1ms |
+| **yolov8s**  | 60  | 2   | 700.6ms | 709.8ms | 706.3ms | 696.5ms | 700.3ms | 701.2ms |
+
+> Compared to v8s, v8n runs roughly twice as fast in terms of TPS (4 → 2). Both runs are vsync-capped at 60 FPS for rendering.
+
 ---
 
 ## Features
